@@ -72,16 +72,16 @@ export default function NewExam() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 sm:py-8">
         <Card className="max-w-2xl mx-auto shadow-elegant">
           <CardHeader>
-            <CardTitle className="text-2xl">Cadastrar Nova Prova</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">Cadastrar Nova Prova</CardTitle>
             <CardDescription>
               Preencha os dados da prova. A data deve ter pelo menos 14 dias de antecedência.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="exam-date">Data da Prova</Label>
                 <Input
