@@ -18,9 +18,8 @@ export const Header = () => {
           
           <nav className="flex items-center gap-2">
             <Button
-              variant={location.pathname === "/" ? "secondary" : "ghost"}
+              variant={location.pathname === "/" ? "navbarActive" : "navbar"}
               asChild
-              className="text-primary-foreground hover:bg-white/20"
             >
               <Link to="/">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -29,9 +28,8 @@ export const Header = () => {
             </Button>
             
             <Button
-              variant={location.pathname === "/new-exam" ? "secondary" : "ghost"}
+              variant={location.pathname === "/new-exam" ? "navbarActive" : "navbar"}
               asChild
-              className="text-primary-foreground hover:bg-white/20"
             >
               <Link to="/new-exam">
                 <Plus className="h-4 w-4 mr-2" />
@@ -41,9 +39,8 @@ export const Header = () => {
             
             {isAdmin && (
               <Button
-                variant={location.pathname === "/admin" ? "secondary" : "ghost"}
+                variant={location.pathname === "/admin" ? "navbarActive" : "navbar"}
                 asChild
-                className="text-primary-foreground hover:bg-white/20"
               >
                 <Link to="/admin">
                   <Users className="h-4 w-4 mr-2" />
@@ -53,9 +50,8 @@ export const Header = () => {
             )}
             
             <Button
-              variant="ghost"
+              variant="navbar"
               onClick={signOut}
-              className="text-primary-foreground hover:bg-white/20"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sair
