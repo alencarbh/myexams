@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Coffee, Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -30,9 +30,15 @@ const shiftLabels = {
 };
 
 const shiftColors = {
-  morning: "bg-amber-500",
-  afternoon: "bg-orange-500",
-  night: "bg-indigo-500",
+  morning: "bg-orange-500 text-white",
+  afternoon: "bg-red-500 text-white",
+  night: "bg-black text-white",
+};
+
+const shiftIcons = {
+  morning: Coffee,
+  afternoon: Sun,
+  night: Moon,
 };
 
 export default function ExamList() {
@@ -147,7 +153,15 @@ export default function ExamList() {
                         <TableCell>{exam.subject}</TableCell>
                         <TableCell>
                           <Badge className={shiftColors[exam.shift]}>
-                            {shiftLabels[exam.shift]}
+                            {(() => {
+                              const Icon = shiftIcons[exam.shift];
+                              return (
+                                <span className="flex items-center gap-1">
+                                  <Icon className="h-3 w-3" />
+                                  {shiftLabels[exam.shift]}
+                                </span>
+                              );
+                            })()}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
