@@ -118,13 +118,25 @@ export default function ExamList() {
     );
   }
 
+  const ShiftBadge = ({ shift }: { shift: "morning" | "afternoon" | "night" }) => {
+    const Icon = shiftIcons[shift];
+    return (
+      <Badge className={shiftColors[shift]}>
+        <span className="flex items-center gap-1">
+          <Icon className="h-3 w-3" />
+          {shiftLabels[shift]}
+        </span>
+      </Badge>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 sm:py-8">
         <Card className="shadow-elegant">
           <CardHeader>
-            <CardTitle className="text-2xl">Próximas Provas</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">Próximas Provas</CardTitle>
           </CardHeader>
           <CardContent>
             {exams.length === 0 ? (
@@ -132,63 +144,110 @@ export default function ExamList() {
                 Nenhuma prova cadastrada ainda.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Colaborador</TableHead>
-                      <TableHead>Matéria</TableHead>
-                      <TableHead>Turno</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {exams.map((exam) => (
-                      <TableRow key={exam.id}>
-                        <TableCell className="font-medium">
-                          {format(new Date(exam.exam_date), "dd/MM/yyyy", { locale: ptBR })}
-                        </TableCell>
-                        <TableCell>{exam.profiles.name}</TableCell>
-                        <TableCell>{exam.subject}</TableCell>
-                        <TableCell>
-                          <Badge className={shiftColors[exam.shift]}>
-                            {(() => {
-                              const Icon = shiftIcons[exam.shift];
-                              return (
-                                <span className="flex items-center gap-1">
-                                  <Icon className="h-3 w-3" />
-                                  {shiftLabels[exam.shift]}
-                                </span>
-                              );
-                            })()}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Colaborador</TableHead>
+                        <TableHead>Matéria</TableHead>
+                        <TableHead>Turno</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {exams.map((exam) => (
+                        <TableRow key={exam.id}>
+                          <TableCell className="font-medium">
+                            {format(new Date(exam.exam_date), "dd/MM/yyyy", { locale: ptBR })}
+                          </TableCell>
+                          <TableCell>{exam.profiles.name}</TableCell>
+                          <TableCell>{exam.subject}</TableCell>
+                          <TableCell>
+                            <ShiftBadge shift={exam.shift} />
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {canEdit(exam) && (
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate(`/edit-exam/${exam.id}`)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleDelete(exam.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                  {exams.map((exam) => (
+                    <Card key={exam.id} className="border-2">
+                      <CardContent className="pt-6">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Data</p>
+                              <p className="font-semibold">
+                                {format(new Date(exam.exam_date), "dd/MM/yyyy", { locale: ptBR })}
+                              </p>
+                            </div>
+                            <ShiftBadge shift={exam.shift} />
+                          </div>
+                          
+                          <div>
+                            <p className="text-sm text-muted-foreground">Colaborador</p>
+                            <p className="font-semibold">{exam.profiles.name}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-sm text-muted-foreground">Matéria</p>
+                            <p className="font-semibold">{exam.subject}</p>
+                          </div>
+
                           {canEdit(exam) && (
-                            <div className="flex justify-end gap-2">
+                            <div className="flex gap-2 pt-2">
                               <Button
                                 size="sm"
                                 variant="outline"
+                                className="flex-1"
                                 onClick={() => navigate(`/edit-exam/${exam.id}`)}
                               >
-                                <Pencil className="h-4 w-4" />
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Editar
                               </Button>
                               <Button
                                 size="sm"
                                 variant="destructive"
+                                className="flex-1"
                                 onClick={() => handleDelete(exam.id)}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
                               </Button>
                             </div>
                           )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
