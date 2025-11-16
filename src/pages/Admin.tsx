@@ -28,7 +28,7 @@ type Profile = {
 };
 
 export default function Admin() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -39,13 +39,16 @@ export default function Admin() {
   const [makeAdmin, setMakeAdmin] = useState(false);
 
   useEffect(() => {
+    // Wait for auth to finish loading before checking
+    if (authLoading) return;
+    
     if (!isAdmin) {
       toast.error("Acesso negado. Apenas administradores podem acessar esta página.");
       navigate("/");
       return;
     }
     fetchProfiles();
-  }, [isAdmin, navigate]);
+  }, [isAdmin, authLoading, navigate]);
 
   const fetchProfiles = async () => {
     const { data, error } = await supabase
@@ -117,6 +120,14 @@ export default function Admin() {
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Carregando...</p>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return null;
