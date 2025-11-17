@@ -38,6 +38,13 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
+    --shift-morning: 30 100% 75%;
+    --shift-morning-foreground: 30 100% 20%;
+    --shift-afternoon: 330 100% 80%;
+    --shift-afternoon-foreground: 330 100% 25%;
+    --shift-night: 270 70% 75%;
+    --shift-night-foreground: 270 70% 25%;
+
     --sidebar-background: 210 100% 97%;
     --sidebar-foreground: 210 60% 15%;
     --sidebar-primary: 210 100% 45%;
@@ -80,6 +87,13 @@ All colors MUST be HSL.
     --border: 210 30% 22%;
     --input: 210 30% 22%;
     --ring: 210 100% 55%;
+
+    --shift-morning: 30 100% 65%;
+    --shift-morning-foreground: 30 100% 15%;
+    --shift-afternoon: 330 100% 70%;
+    --shift-afternoon-foreground: 330 100% 20%;
+    --shift-night: 270 70% 65%;
+    --shift-night-foreground: 270 70% 20%;
     
     --sidebar-background: 210 50% 10%;
     --sidebar-foreground: 210 40% 98%;
