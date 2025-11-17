@@ -56,7 +56,8 @@ export default function Admin() {
       .select(`
         *,
         user_roles(role)
-      `);
+      `)
+      .order("name", { ascending: true });
 
     if (error) {
       toast.error("Erro ao carregar colaboradores");
