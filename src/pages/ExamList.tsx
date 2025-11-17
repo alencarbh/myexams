@@ -30,9 +30,9 @@ const shiftLabels = {
 };
 
 const shiftColors = {
-  morning: "bg-orange-500 text-white",
-  afternoon: "bg-red-500 text-white",
-  night: "bg-black text-white",
+  morning: "bg-shift-morning text-shift-morning-foreground",
+  afternoon: "bg-shift-afternoon text-shift-afternoon-foreground",
+  night: "bg-shift-night text-shift-night-foreground",
 };
 
 const shiftIcons = {
