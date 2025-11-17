@@ -12,35 +12,46 @@ export const useAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Setup auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          await checkAdminStatus(session.user.id);
-        } else {
-          setIsAdmin(false);
-        }
-        
-        setLoading(false);
-      }
-    );
+    let isMounted = true;
 
-    // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const initAuth = async () => {
+      // Check for existing session first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!isMounted) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
         await checkAdminStatus(session.user.id);
+      } else {
+        setIsAdmin(false);
       }
       
       setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    // Setup auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          checkAdminStatus(session.user.id);
+        } else {
+          setIsAdmin(false);
+        }
+      }
+    );
+
+    initAuth();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const checkAdminStatus = async (userId: string) => {
