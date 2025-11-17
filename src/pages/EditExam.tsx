@@ -26,7 +26,7 @@ const examSchema = z.object({
 
 export default function EditExam() {
   const { id } = useParams();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -39,11 +39,13 @@ export default function EditExam() {
   const minDate = format(addDays(new Date(), 14), "yyyy-MM-dd");
 
   useEffect(() => {
-    fetchExam();
-  }, [id]);
+    if (!authLoading) {
+      fetchExam();
+    }
+  }, [id, authLoading]);
 
   const fetchExam = async () => {
-    if (!id) return;
+    if (!id || !user) return;
 
     const { data, error } = await supabase
       .from("exams")
@@ -57,7 +59,8 @@ export default function EditExam() {
       return;
     }
 
-    if (!isAdmin && data.user_id !== user?.id) {
+    // Admins podem editar qualquer prova
+    if (!isAdmin && data.user_id !== user.id) {
       toast.error("Você não tem permissão para editar esta prova");
       navigate("/");
       return;
