@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calendar, LogOut, Users, Plus, Menu } from "lucide-react";
+import { Calendar, LogOut, Users, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -20,17 +20,6 @@ export const Header = () => {
         <Link to="/">
           <Calendar className="h-4 w-4 mr-2" />
           Provas
-        </Link>
-      </Button>
-      
-      <Button
-        variant={location.pathname === "/new-exam" ? "navbarActive" : "navbar"}
-        asChild
-        onClick={() => setOpen(false)}
-      >
-        <Link to="/new-exam">
-          <Plus className="h-4 w-4 mr-2" />
-          Nova Prova
         </Link>
       </Button>
       
