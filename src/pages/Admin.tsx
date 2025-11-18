@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { UserPlus, Shield, User } from "lucide-react";
+import { UserPlus, Shield, User, Trash2 } from "lucide-react";
 import { z } from "zod";
 
 const collaboratorSchema = z.object({
@@ -64,6 +64,45 @@ export default function Admin() {
       console.error(error);
     } else {
       setProfiles(data || []);
+    }
+  };
+
+  const handleDelete = async (userId: string, userName: string) => {
+    if (!window.confirm(`Tem certeza que deseja remover ${userName}? Esta ação irá deletar todas as provas deste usuário e não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Você precisa estar autenticado");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao remover usuário');
+      }
+
+      toast.success('Usuário removido com sucesso');
+      fetchProfiles();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao remover usuário');
+      console.error(error);
     }
   };
 
@@ -226,6 +265,7 @@ export default function Admin() {
                       <TableHead>Nome</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Perfil</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -254,6 +294,16 @@ export default function Admin() {
                                 </>
                               )}
                             </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => handleDelete(profile.id, profile.name)}
+                              title="Remover usuário"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       );
