@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Coffee, Sun, Moon } from "lucide-react";
+import { Pencil, Trash2, Coffee, Sun, Moon, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -136,7 +136,13 @@ export default function ExamList() {
       <main className="container mx-auto px-4 py-4 sm:py-8">
         <Card className="shadow-elegant">
           <CardHeader>
-            <CardTitle className="text-xl sm:text-2xl">Próximas Provas</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl sm:text-2xl">Próximas Provas</CardTitle>
+              <Button onClick={() => navigate("/new-exam")}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Prova
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {exams.length === 0 ? (
