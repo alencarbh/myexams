@@ -110,11 +110,14 @@ export default function ExamList() {
 
   // Sort exams by collaborator name (alphabetically) or by date
   const sortedExams = useMemo(() => {
+    console.log('sortByCollaborator:', sortByCollaborator);
+    console.log('exams before sort:', exams.map(e => ({ name: e.profiles.name, date: e.exam_date })));
+    
     if (!sortByCollaborator) {
       return exams;
     }
     
-    return [...exams].sort((a, b) => {
+    const sorted = [...exams].sort((a, b) => {
       // First sort by collaborator name
       const nameCompare = a.profiles.name.localeCompare(b.profiles.name);
       if (nameCompare !== 0) return nameCompare;
@@ -122,6 +125,9 @@ export default function ExamList() {
       // Then sort by date (ascending) for same collaborator
       return new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime();
     });
+    
+    console.log('exams after sort:', sorted.map(e => ({ name: e.profiles.name, date: e.exam_date })));
+    return sorted;
   }, [exams, sortByCollaborator]);
 
   const toggleCollaboratorSort = () => {
