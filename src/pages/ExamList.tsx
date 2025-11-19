@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil, Trash2, Coffee, Sun, Moon, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -44,6 +45,7 @@ const shiftIcons = {
 export default function ExamList() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCollaborator, setSelectedCollaborator] = useState<string>("all");
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -107,6 +109,24 @@ export default function ExamList() {
     return isAdmin || exam.user_id === user?.id;
   };
 
+  // Get unique collaborators for filter
+  const collaborators = useMemo(() => {
+    const uniqueCollaborators = Array.from(
+      new Map(
+        exams.map(exam => [exam.user_id, { id: exam.user_id, name: exam.profiles.name }])
+      ).values()
+    );
+    return uniqueCollaborators.sort((a, b) => a.name.localeCompare(b.name));
+  }, [exams]);
+
+  // Filter exams by selected collaborator
+  const filteredExams = useMemo(() => {
+    if (selectedCollaborator === "all") {
+      return exams;
+    }
+    return exams.filter(exam => exam.user_id === selectedCollaborator);
+  }, [exams, selectedCollaborator]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -136,18 +156,45 @@ export default function ExamList() {
       <main className="container mx-auto px-4 py-4 sm:py-8">
         <Card className="shadow-elegant">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl sm:text-2xl">Próximas Provas</CardTitle>
-              <Button onClick={() => navigate("/new-exam")}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nova Prova
-              </Button>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl sm:text-2xl">Próximas Provas</CardTitle>
+                <Button onClick={() => navigate("/new-exam")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nova Prova
+                </Button>
+              </div>
+              
+              {collaborators.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <label htmlFor="collaborator-filter" className="text-sm font-medium whitespace-nowrap">
+                    Filtrar por:
+                  </label>
+                  <Select value={selectedCollaborator} onValueChange={setSelectedCollaborator}>
+                    <SelectTrigger id="collaborator-filter" className="w-[200px]">
+                      <SelectValue placeholder="Todos os colaboradores" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os colaboradores</SelectItem>
+                      {collaborators.map(collaborator => (
+                        <SelectItem key={collaborator.id} value={collaborator.id}>
+                          {collaborator.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </CardHeader>
           <CardContent>
             {exams.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
                 Nenhuma prova cadastrada ainda.
+              </p>
+            ) : filteredExams.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                Nenhuma prova encontrada para este colaborador.
               </p>
             ) : (
               <>
@@ -164,7 +211,7 @@ export default function ExamList() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {exams.map((exam) => (
+                      {filteredExams.map((exam) => (
                         <TableRow key={exam.id}>
                           <TableCell className="font-medium">
                             {format(new Date(exam.exam_date), "dd/MM/yyyy", { locale: ptBR })}
@@ -202,7 +249,7 @@ export default function ExamList() {
 
                 {/* Mobile Card View */}
                 <div className="md:hidden space-y-4">
-                  {exams.map((exam) => (
+                  {filteredExams.map((exam) => (
                     <Card key={exam.id} className="border-2">
                       <CardContent className="pt-6">
                         <div className="space-y-3">
