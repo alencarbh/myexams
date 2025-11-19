@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Calendar } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido").max(255),
@@ -17,7 +18,11 @@ const loginSchema = z.object({
 const signupSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter no mínimo 2 caracteres").max(100),
   email: z.string().email("Email inválido").max(255),
-  password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres").max(100),
+  password: z.string()
+    .min(8, "Senha deve ter no mínimo 8 caracteres")
+    .max(100)
+    .regex(/\d/, "Senha deve conter pelo menos 1 número")
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Senha deve conter pelo menos 1 caractere especial"),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
@@ -189,6 +194,7 @@ export default function Auth() {
                   required
                   disabled={isLoading}
                 />
+                <PasswordStrengthIndicator password={signupPassword} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-confirm-password">Confirmar Senha</Label>
